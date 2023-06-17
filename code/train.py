@@ -4,17 +4,35 @@
 # Created Date: Friday, 16th June 2023 8:12:09 am                              #
 # Author: Viraj Bagal (viraj.bagal@synapsica.com)                              #
 # -----                                                                        #
-# Last Modified: Friday, 16th June 2023 4:12:31 pm                             #
+# Last Modified: Saturday, 17th June 2023 10:06:07 am                          #
 # Modified By: Viraj Bagal (viraj.bagal@synapsica.com)                         #
 # -----                                                                        #
 # Copyright (c) 2023 Synapsica                                                 #
 ################################################################################
 import datasets
 from random import randrange
+import os
+from transformers import (
+    AutoTokenizer,
+    AutoModelForSeq2SeqLM,
+    DataCollatorForSeq2Seq,
+    Seq2SeqTrainingArguments,
+    Seq2SeqTrainer,
+)
+import evaluate
+import nltk
+import numpy as np
+from nltk.tokenize import sent_tokenize
 
-DATASET_PATH = "data_v1"
+nltk.download("punkt")
+
+
+DATASET_PATH = "data_v3"
 TEXT_COL_NAME = "Text"
 SUMMARY_COL_NAME = "Summary"
+EXPERIMENT_NAME = "summary_ann"
+OUTPUT_DIR = "../output/{EXPERIMENT_NAME}"
+os.makedirs(OUTPUT_DIR, exist_ok=True)
 dataset = datasets.load_from_disk(DATASET_PATH)
 
 print(f"Train dataset size: {len(dataset['train'])}")
@@ -25,14 +43,10 @@ sample = dataset["train"][randrange(len(dataset["train"]))]
 print(f"text: \n{sample[TEXT_COL_NAME]}\n---------------")
 print(f"summary: \n{sample[SUMMARY_COL_NAME]}\n---------------")
 
-
-from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
-
 model_id = "google/flan-t5-large"
 
-# Load tokenizer of FLAN-t5-base
+# Load tokenizer
 tokenizer = AutoTokenizer.from_pretrained(model_id)
-
 
 # The maximum total input sequence length after tokenization.
 # Sequences longer than this will be truncated, sequences shorter will be padded.
@@ -83,9 +97,6 @@ print("Columns names: ", column_names)
 tokenized_dataset = dataset.map(preprocess_function, batched=True, remove_columns=column_names)
 print(f"Keys of tokenized dataset: {list(tokenized_dataset['train'].features)}")
 
-
-from transformers import AutoModelForSeq2SeqLM, DataCollatorForSeq2Seq, Seq2SeqTrainingArguments, Seq2SeqTrainer
-
 # load model from the hub
 print("Loading the model")
 model = AutoModelForSeq2SeqLM.from_pretrained(model_id, device_map="auto")
@@ -93,7 +104,6 @@ model = AutoModelForSeq2SeqLM.from_pretrained(model_id, device_map="auto")
 from peft import LoraConfig, get_peft_model, prepare_model_for_int8_training, TaskType
 
 # Define LoRA Config
-# target_modules=["q", "v"]
 lora_config = LoraConfig(
     r=16,
     lora_alpha=32,
@@ -121,15 +131,6 @@ else:
 model = get_peft_model(model, lora_config)
 model.print_trainable_parameters()
 
-# trainable params: 18874368 || all params: 11154206720 || trainable%: 0.16921300163961817
-
-
-import evaluate
-import nltk
-import numpy as np
-from nltk.tokenize import sent_tokenize
-
-nltk.download("punkt")
 
 # Metric
 metric = evaluate.load("rouge")
@@ -166,8 +167,6 @@ def compute_metrics(eval_preds):
     return result
 
 
-from transformers import DataCollatorForSeq2Seq
-
 BATCH_SIZE = 2
 # we want to ignore tokenizer pad token in the loss
 label_pad_token_id = -100
@@ -176,7 +175,7 @@ data_collator = DataCollatorForSeq2Seq(
     tokenizer, model=model, label_pad_token_id=label_pad_token_id, pad_to_multiple_of=8
 )
 
-OUTPUT_DIR = "../output"
+
 # Define training args
 training_args = Seq2SeqTrainingArguments(
     output_dir=OUTPUT_DIR,

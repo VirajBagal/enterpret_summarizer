@@ -1,0 +1,47 @@
+{
+  "citation": "",
+  "description": "",
+  "features": {
+    "Customer": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "Type": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "Text": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "Summary": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "text_length": {
+      "dtype": "int64",
+      "_type": "Value"
+    },
+    "summary_length": {
+      "dtype": "int64",
+      "_type": "Value"
+    },
+    "sum_text_ratio": {
+      "dtype": "float64",
+      "_type": "Value"
+    },
+    "sim_score": {
+      "dtype": "float64",
+      "_type": "Value"
+    },
+    "embeddings_summary": {
+      "feature": {
+        "dtype": "float32",
+        "_type": "Value"
+      },
+      "_type": "Sequence"
+    }
+  },
+  "homepage": "",
+  "license": ""
+}
