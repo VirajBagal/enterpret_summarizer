@@ -1,5 +1,8 @@
-fastapi==0.97.0
+datasets==2.13.0
+evaluate==0.4.0
+filelock==3.12.2
+nltk==3.8.1
 numpy==1.23.5
 peft==0.3.0
-pydantic==1.10.2
-transformers==4.28.1
+transformers==4.30.2
+wandb==0.15.4

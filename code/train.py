@@ -4,7 +4,7 @@
 # Created Date: Friday, 16th June 2023 8:12:09 am                              #
 # Author: Viraj Bagal (viraj.bagal@synapsica.com)                              #
 # -----                                                                        #
-# Last Modified: Saturday, 17th June 2023 10:06:07 am                          #
+# Last Modified: Saturday, 17th June 2023 5:19:32 pm                           #
 # Modified By: Viraj Bagal (viraj.bagal@synapsica.com)                         #
 # -----                                                                        #
 # Copyright (c) 2023 Synapsica                                                 #
@@ -13,202 +13,126 @@ import datasets
 from random import randrange
 import os
 from transformers import (
-    AutoTokenizer,
-    AutoModelForSeq2SeqLM,
     DataCollatorForSeq2Seq,
     Seq2SeqTrainingArguments,
     Seq2SeqTrainer,
 )
 import evaluate
-import nltk
-import numpy as np
-from nltk.tokenize import sent_tokenize
-
-nltk.download("punkt")
-
-
-DATASET_PATH = "data_v3"
-TEXT_COL_NAME = "Text"
-SUMMARY_COL_NAME = "Summary"
-EXPERIMENT_NAME = "summary_ann"
-OUTPUT_DIR = "../output/{EXPERIMENT_NAME}"
-os.makedirs(OUTPUT_DIR, exist_ok=True)
-dataset = datasets.load_from_disk(DATASET_PATH)
-
-print(f"Train dataset size: {len(dataset['train'])}")
-print(f"Test dataset size: {len(dataset['test'])}")
+import utils
+from functools import partial
+import wandb
+import argparse
 
 
-sample = dataset["train"][randrange(len(dataset["train"]))]
-print(f"text: \n{sample[TEXT_COL_NAME]}\n---------------")
-print(f"summary: \n{sample[SUMMARY_COL_NAME]}\n---------------")
+def main(args):
+    class config:
+        DATASET_PATH = args.dataset_path
+        TEXT_COL_NAME = "Text"
+        SUMMARY_COL_NAME = "Summary"
+        EXPERIMENT_NAME = args.project_name
+        RUN_NAME = args.run_name
+        OUTPUT_DIR = os.path.join(args.output_dir, EXPERIMENT_NAME)
+        BATCH_SIZE = args.batch_size
+        # we want to ignore tokenizer pad token in the loss
+        LABEL_PAD_TOKEN_ID = -100
+        LR = args.lr
+        NUM_TRAIN_EPOCHS = args.num_epochs
+        MODEL_ID = args.model
 
-model_id = "google/flan-t5-large"
+    if args.log:
+        wandb.login()
+        os.environ["WANDB_PROJECT"] = config.EXPERIMENT_NAME
 
-# Load tokenizer
-tokenizer = AutoTokenizer.from_pretrained(model_id)
+    os.makedirs(config.OUTPUT_DIR, exist_ok=True)
+    dataset = datasets.load_from_disk(config.DATASET_PATH)
 
-# The maximum total input sequence length after tokenization.
-# Sequences longer than this will be truncated, sequences shorter will be padded.
-tokenized_inputs = datasets.concatenate_datasets([dataset["train"], dataset["test"]]).map(
-    lambda x: tokenizer(x[TEXT_COL_NAME], truncation=True),
-    batched=True,
-    remove_columns=[TEXT_COL_NAME, SUMMARY_COL_NAME],
-)
-max_source_length = max([len(x) for x in tokenized_inputs["input_ids"]])
-print(f"Max source length: {max_source_length}")
+    print(f"Train dataset size: {len(dataset['train'])}")
+    print(f"Test dataset size: {len(dataset['test'])}")
 
-# The maximum total sequence length for target text after tokenization.
-# Sequences longer than this will be truncated, sequences shorter will be padded."
-tokenized_targets = datasets.concatenate_datasets([dataset["train"], dataset["test"]]).map(
-    lambda x: tokenizer(x[SUMMARY_COL_NAME], truncation=True),
-    batched=True,
-    remove_columns=[TEXT_COL_NAME, SUMMARY_COL_NAME],
-)
-max_target_length = max([len(x) for x in tokenized_targets["input_ids"]])
-print(f"Max target length: {max_target_length}")
+    sample = dataset["train"][randrange(len(dataset["train"]))]
+    print(f"text: \n{sample[config.TEXT_COL_NAME]}\n---------------")
+    print(f"summary: \n{sample[config.SUMMARY_COL_NAME]}\n---------------")
 
+    tokenizer, model = utils.load_model_tokenizer(config.MODEL_ID, args.use_peft)
 
-def preprocess_function(sample, padding="max_length"):
-    # add prefix to the input for t5
-    inputs = ["summarize: " + item for item in sample[TEXT_COL_NAME]]
+    max_source_length, max_target_length = utils.get_max_text_lengths(tokenizer, dataset, config)
+    # set these values in config
+    config.MAX_SOURCE_LENGTH = max_source_length
+    config.MAX_TARGET_LENGTH = max_target_length
 
-    # tokenize inputs
-    model_inputs = tokenizer(inputs, max_length=max_source_length, padding=padding, truncation=True)
+    column_names = dataset["train"].column_names
+    print("Columns names: ", column_names)
+    tokenized_dataset = dataset.map(
+        utils.tokenize, batched=True, remove_columns=column_names, fn_kwargs={"tokenizer": tokenizer, "config": config}
+    )
+    print(f"Keys of tokenized dataset: {list(tokenized_dataset['train'].features)}")
 
-    # Tokenize targets with the `text_target` keyword argument
-    labels = tokenizer(
-        text_target=sample[SUMMARY_COL_NAME], max_length=max_target_length, padding=padding, truncation=True
+    print("Input ID: ", tokenized_dataset["train"]["input_ids"][0])
+    print("Attention Mask: ", tokenized_dataset["train"]["attention_mask"][0])
+    print("Label: ", tokenized_dataset["train"]["labels"][0])
+    # Metric
+    metric = evaluate.load("rouge")
+
+    # Data collator
+    data_collator = DataCollatorForSeq2Seq(
+        tokenizer, model=model, label_pad_token_id=config.LABEL_PAD_TOKEN_ID, pad_to_multiple_of=8
     )
 
-    # If we are padding here, replace all tokenizer.pad_token_id in the labels by -100 when we want to ignore
-    # padding in the loss.
-    if padding == "max_length":
-        labels["input_ids"] = [
-            [(l if l != tokenizer.pad_token_id else -100) for l in label] for label in labels["input_ids"]
-        ]
+    # Define training args
+    training_args = Seq2SeqTrainingArguments(
+        output_dir=config.OUTPUT_DIR,
+        per_device_train_batch_size=config.BATCH_SIZE,
+        per_device_eval_batch_size=config.BATCH_SIZE,
+        predict_with_generate=True,
+        fp16=True,  # Overflows with fp16
+        learning_rate=config.LR,
+        num_train_epochs=config.NUM_TRAIN_EPOCHS,
+        # logging & evaluation strategies
+        logging_dir=f"{config.OUTPUT_DIR}/logs",
+        logging_strategy="steps",
+        # how often to log
+        logging_steps=10,
+        evaluation_strategy="steps",
+        # how often to evaluate the model
+        eval_steps=100,
+        save_strategy="steps",
+        # how often to checkpoint the model
+        save_steps=500,
+        report_to="wandb" if args.log else None,
+        save_total_limit=2,
+        load_best_model_at_end=True,
+        push_to_hub=False,
+    )
 
-    model_inputs["labels"] = labels["input_ids"]
-    return model_inputs
+    # Create Trainer instance
+    trainer = Seq2SeqTrainer(
+        model=model,
+        args=training_args,
+        data_collator=data_collator,
+        train_dataset=tokenized_dataset["train"],
+        eval_dataset=tokenized_dataset["test"],
+        compute_metrics=partial(utils.compute_metrics, tokenizer=tokenizer, metric=metric, config=config),
+    )
 
+    # Start training
+    trainer.train()
+    trainer.evaluate()
 
-column_names = dataset["train"].column_names
-print("Columns names: ", column_names)
-tokenized_dataset = dataset.map(preprocess_function, batched=True, remove_columns=column_names)
-print(f"Keys of tokenized dataset: {list(tokenized_dataset['train'].features)}")
-
-# load model from the hub
-print("Loading the model")
-model = AutoModelForSeq2SeqLM.from_pretrained(model_id, device_map="auto")
-
-from peft import LoraConfig, get_peft_model, prepare_model_for_int8_training, TaskType
-
-# Define LoRA Config
-lora_config = LoraConfig(
-    r=16,
-    lora_alpha=32,
-    target_modules=["q", "v"],
-    lora_dropout=0.05,
-    bias="none",
-    task_type=TaskType.SEQ_2_SEQ_LM,
-    inference_mode=False,
-)
-# prepare int-8 model for training
-# print("Preparing model for int8 training")
-# model = prepare_model_for_int8_training(model)
-
-# without below code, none of the tensors have grad_fn
-if hasattr(model, "enable_input_require_grads"):
-    model.enable_input_require_grads()
-else:
-
-    def make_inputs_require_grad(module, input, output):
-        output.requires_grad_(True)
-
-    model.get_input_embeddings().register_forward_hook(make_inputs_require_grad)
-
-# add LoRA adaptor
-model = get_peft_model(model, lora_config)
-model.print_trainable_parameters()
+    model.save_pretrained(config.OUTPUT_DIR)
 
 
-# Metric
-metric = evaluate.load("rouge")
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--dataset_path", help="path to data folder")
+    parser.add_argument("--output_dir", default="../output", help="path to save checkpoints")
+    parser.add_argument("--project_name", default="FeedbackSummarizer", help="name of the project")
+    parser.add_argument("--run_name", required=True, help="name of the experiment")
+    parser.add_argument("--model", default="google/flan-t5-small", help="model for training")
+    parser.add_argument("--batch_size", default=2, type=int, help="training and eval batch size")
+    parser.add_argument("--lr", default=5e-5, type=float, help="learning rate")
+    parser.add_argument("--num_epochs", default=5, type=int, help="num_epochs")
+    parser.add_argument("--use_peft", action="store_true", help="use parameter efficient FT")
+    parser.add_argument("--log", action="store_true", help="log results to wandb")
 
-
-# helper function to postprocess text
-def postprocess_text(preds, labels):
-    preds = [pred.strip() for pred in preds]
-    labels = [label.strip() for label in labels]
-
-    # rougeLSum expects newline after each sentence
-    preds = ["\n".join(sent_tokenize(pred)) for pred in preds]
-    labels = ["\n".join(sent_tokenize(label)) for label in labels]
-
-    return preds, labels
-
-
-def compute_metrics(eval_preds):
-    preds, labels = eval_preds
-    if isinstance(preds, tuple):
-        preds = preds[0]
-    decoded_preds = tokenizer.batch_decode(preds, skip_special_tokens=True)
-    # Replace -100 in the labels as we can't decode them.
-    labels = np.where(labels != -100, labels, tokenizer.pad_token_id)
-    decoded_labels = tokenizer.batch_decode(labels, skip_special_tokens=True)
-
-    # Some simple post-processing
-    decoded_preds, decoded_labels = postprocess_text(decoded_preds, decoded_labels)
-
-    result = metric.compute(predictions=decoded_preds, references=decoded_labels, use_stemmer=True)
-    result = {k: round(v * 100, 4) for k, v in result.items()}
-    prediction_lens = [np.count_nonzero(pred != tokenizer.pad_token_id) for pred in preds]
-    result["gen_len"] = np.mean(prediction_lens)
-    return result
-
-
-BATCH_SIZE = 2
-# we want to ignore tokenizer pad token in the loss
-label_pad_token_id = -100
-# Data collator
-data_collator = DataCollatorForSeq2Seq(
-    tokenizer, model=model, label_pad_token_id=label_pad_token_id, pad_to_multiple_of=8
-)
-
-
-# Define training args
-training_args = Seq2SeqTrainingArguments(
-    output_dir=OUTPUT_DIR,
-    per_device_train_batch_size=BATCH_SIZE,
-    per_device_eval_batch_size=BATCH_SIZE,
-    predict_with_generate=True,
-    fp16=True,  # Overflows with fp16
-    learning_rate=5e-5,
-    num_train_epochs=5,
-    # logging & evaluation strategies
-    logging_dir=f"{OUTPUT_DIR}/logs",
-    logging_strategy="steps",
-    logging_steps=500,
-    evaluation_strategy="epoch",
-    save_strategy="epoch",
-    save_total_limit=2,
-    load_best_model_at_end=True,
-    push_to_hub=False,
-    gradient_checkpointing=True,
-)
-
-# Create Trainer instance
-trainer = Seq2SeqTrainer(
-    model=model,
-    args=training_args,
-    data_collator=data_collator,
-    train_dataset=tokenized_dataset["train"],
-    eval_dataset=tokenized_dataset["test"],
-    compute_metrics=compute_metrics,
-)
-
-# Start training
-trainer.train()
-trainer.evaluate()
-
-model.save_pretrained(OUTPUT_DIR)
+    args = parser.parse_args()
+    main(args)
