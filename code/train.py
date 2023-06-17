@@ -4,7 +4,7 @@
 # Created Date: Friday, 16th June 2023 8:12:09 am                              #
 # Author: Viraj Bagal (viraj.bagal@synapsica.com)                              #
 # -----                                                                        #
-# Last Modified: Saturday, 17th June 2023 5:19:32 pm                           #
+# Last Modified: Saturday, 17th June 2023 7:51:40 pm                           #
 # Modified By: Viraj Bagal (viraj.bagal@synapsica.com)                         #
 # -----                                                                        #
 # Copyright (c) 2023 Synapsica                                                 #
@@ -47,7 +47,7 @@ def main(args):
     dataset = datasets.load_from_disk(config.DATASET_PATH)
 
     print(f"Train dataset size: {len(dataset['train'])}")
-    print(f"Test dataset size: {len(dataset['test'])}")
+    print(f"Val dataset size: {len(dataset['val'])}")
 
     sample = dataset["train"][randrange(len(dataset["train"]))]
     print(f"text: \n{sample[config.TEXT_COL_NAME]}\n---------------")
@@ -84,7 +84,6 @@ def main(args):
         per_device_train_batch_size=config.BATCH_SIZE,
         per_device_eval_batch_size=config.BATCH_SIZE,
         predict_with_generate=True,
-        fp16=True,  # Overflows with fp16
         learning_rate=config.LR,
         num_train_epochs=config.NUM_TRAIN_EPOCHS,
         # logging & evaluation strategies
@@ -110,7 +109,7 @@ def main(args):
         args=training_args,
         data_collator=data_collator,
         train_dataset=tokenized_dataset["train"],
-        eval_dataset=tokenized_dataset["test"],
+        eval_dataset=tokenized_dataset["val"],
         compute_metrics=partial(utils.compute_metrics, tokenizer=tokenizer, metric=metric, config=config),
     )
 
@@ -118,12 +117,15 @@ def main(args):
     trainer.train()
     trainer.evaluate()
 
-    model.save_pretrained(config.OUTPUT_DIR)
+    if args.use_peft:
+        model.save_pretrained(config.OUTPUT_DIR)
+    else:
+        trainer.save_model(config.OUTPUT_DIR)
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--dataset_path", help="path to data folder")
+    parser.add_argument("--dataset_path", required=True, help="path to data folder")
     parser.add_argument("--output_dir", default="../output", help="path to save checkpoints")
     parser.add_argument("--project_name", default="FeedbackSummarizer", help="name of the project")
     parser.add_argument("--run_name", required=True, help="name of the experiment")
