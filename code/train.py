@@ -4,7 +4,7 @@
 # Created Date: Friday, 16th June 2023 8:12:09 am                              #
 # Author: Viraj Bagal (viraj.bagal@synapsica.com)                              #
 # -----                                                                        #
-# Last Modified: Sunday, 18th June 2023 8:34:48 am                             #
+# Last Modified: Sunday, 18th June 2023 11:05:55 am                            #
 # Modified By: Viraj Bagal (viraj.bagal@synapsica.com)                         #
 # -----                                                                        #
 # Copyright (c) 2023 Synapsica                                                 #
@@ -126,7 +126,7 @@ def main(args):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--dataset_path", help="path to data folder")
+    parser.add_argument("--dataset_path", required=True, help="path to data folder")
     parser.add_argument("--output_dir", default="../output", help="path to save checkpoints")
     parser.add_argument("--project_name", default="FeedbackSummarizer", help="name of the project")
     parser.add_argument("--run_name", required=True, help="name of the experiment")

@@ -4,7 +4,7 @@
 # Created Date: Saturday, 17th June 2023 4:52:13 pm                            #
 # Author: Viraj Bagal (viraj.bagal@synapsica.com)                              #
 # -----                                                                        #
-# Last Modified: Sunday, 18th June 2023 8:34:25 am                             #
+# Last Modified: Sunday, 18th June 2023 11:10:23 am                            #
 # Modified By: Viraj Bagal (viraj.bagal@synapsica.com)                         #
 # -----                                                                        #
 # Copyright (c) 2023 Synapsica                                                 #
@@ -33,11 +33,12 @@ def main(args):
         SUMMARY_COL_NAME = "Summary"
         EXPERIMENT_NAME = args.project_name
         RUN_NAME = args.run_name
-        OUTPUT_DIR = os.path.join(args.output_dir, EXPERIMENT_NAME)
+        OUTPUT_DIR = os.path.join(args.output_dir, RUN_NAME)
         BATCH_SIZE = args.batch_size
         # we want to ignore tokenizer pad token in the loss
         LABEL_PAD_TOKEN_ID = -100
         MODEL_DIR = args.model_dir
+        USE_PEFT = args.use_peft
 
     if args.log:
         wandb.login()
@@ -53,7 +54,7 @@ def main(args):
     print(f"text: \n{sample[config.TEXT_COL_NAME]}\n---------------")
     print(f"summary: \n{sample[config.SUMMARY_COL_NAME]}\n---------------")
 
-    model, tokenizer = utils.load_model_tokenizer_for_inference(args)
+    model, tokenizer = utils.load_model_tokenizer_for_inference(config)
 
     max_source_length, max_target_length = utils.get_max_text_lengths(tokenizer, dataset, config)
     # set these values in config
@@ -141,7 +142,6 @@ if __name__ == "__main__":
         default="google/flan-t5-small",
         help="load this model for inference. Needed to specify model name when using peft",
     )
-    parser.add_argument("--model_dir", required=True, help="directory to saved model checkpoints")
     parser.add_argument("--batch_size", default=2, type=int, help="training and eval batch size")
     parser.add_argument("--log", action="store_true", help="log results to wandb")
     parser.add_argument("--use_peft", action="store_true", help="use parameter efficient FT")
