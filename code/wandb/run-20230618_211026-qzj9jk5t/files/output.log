@@ -1,0 +1,58 @@
+Type                Customer
+Appstore/Playstore  Notion      0.510530
+                    zoom        0.464661
+G2                  figma       0.184096
+Twitter             Notion      0.637285
+                    figma       0.215157
+Name: rouge1, dtype: float64
+Text:
+ User: Before starting each project, I meet with my clients to know what they want. To do this, we connect through Miro and create a dashboard to facilitate these explanations so that what is most important is recorded.
+The result of this session is what I use as a basis for the approach of the project in question virtual office.
+User: Miro's navigation was the reason why I decided to use it. It is so good that anyone can adapt to the software with a couple of simple directions.
+I love that the templates can be modified with a few clicks to suit the moment's needs.
+And their visuals are lovely, complete and easy to understand.
+User: Miro has no fundamental weaknesses. It is software that does what it is supposed to do. If it is necessary to use other apps, it is because Miro is not designed for it.
+GT:
+ Users appreciate Figma's remote collaboration capabilities, Jira card integration, canvas design, and various features such as templates, app integrations, presentation tools, and AI components. However, they experience issues when sharing boards with free license users who need to actively collaborate.
+Prediction:
+ User appreciates Miro for its ease of use and ease of use, especially for creating dashboard
+Text:
+ User: Creating team structures
+User: I was able to hop in and create a team structure in less than 5 minutes with no training. I can't remember a tool this simple.
+User: I wish it used AI to tell me what I could improve about the layout of my figjam.
+GT:
+ Users appreciate Miro for consolidating scattered information and providing a single source of reference for their team. They find it easy to navigate and enjoy the table features, sticky notes, and embedded comments. However, they face challenges when updating table functions, as using the back button erases all items entered, making editing difficult without losing changes
+Prediction:
+ User finds the tool simple and easy to use, but wishes it had AI capabilities to help improve
+Text:
+ User: It replaced physical whiteboards for discovery and brainstorming sessions. It also works as an excellent ice-breaker and teambuilding tool to have everyone active during meetings or learning sessions.
+User: For those who miss physical whiteboards and post-its this is the solution to easily (and virtually) visualize projects and organize brainstorming, project management and workflow visualization. It's very friendly, intuitive and compatible with other tools.
+User: Some toolboxes usually overlap important information, and sharing options are not that easy to understand and use, mainly with external (not frequent) users.
+GT:
+ Users find Miro to be an effective collaboration tool that helps run meetings smoothly, reduces manual work, and saves costs. They appreciate its user-friendly interface, available templates, sharing capabilities, and affordability. Miro has positively impacted their workplace, and they have no significant dislikes about the tool.
+Prediction:
+ User finds the product helpful for brainstorming sessions, ice-breakers, and teambuilding
+Text:
+ User: It allows me to facilitate remote workshops and keep track of the ideas shared.
+User: A lot of features that enable collaborative sessions.
+User: Difficulty in organizing the space e find items previously created.
+GT:
+ Users appreciate Miro as their top choice for collaboration with clients, as it allows real-time feedback, process documentation, and easy onboarding. It is particularly useful for remote teams and different time zones. However, users face issues with size capacity, slow performance with too many screenshots, messy boards, and minor formatting problems.
+Prediction:
+ User appreciates the product for its ease of use and collaboration features, but finds it difficult to
+Text:
+ User: Miro helps me as a Design thinking expert and UX Designer to moderate workshops, collect information, synthesize and visualize insights, do creative work and create the first concepts. And all of this in one place and available to the whole team for us all to work collaboratively.
+User: That it is super easy to use, team members can be onbarded in no time and can edit and create content without installing anything. Also the great amount of Templates from the community help a lot.
+User: I haven't found anything that bothers me, for what I use miro (collaborative work, moderation for workshops) it meets all my expectations
+GT:
+ Users appreciate Figma's collaboration features, such as commenting and version history, and its design tools, including animation capabilities. However, they find it expensive for larger teams and lacking in advanced design features compared to other software products.
+Prediction:
+ User finds Miro to be a great tool for design thinking and UX designers, as
+Text:
+ User: Helps quickly get ideas out and keep everyone on the same page.
+User: FigJam is intuitive and easy to use, even for non-designers. It's great to use with clients or internal teams to run brainstorms and retros. It has great features like stickers, timers etc that make creating collaborative sessions simple.
+User: FigJam can be hard to customize to look clean and polished – it's not necessarily the core use case, it's meant to be casual, but it can sometimes be frustrating when trying to use it for more professional meetings or touchpoints.
+GT:
+ Users appreciate Miro for its collaboration and visibility features, allowing them to store various formats of work and share them with stakeholders or teammates. However, they face challenges in managing multiple open Miro tabs and wish for a better organization system or quick access to specific boards.
+Prediction:
+ User finds Figma to be a great tool for brainstorming and collaboration, especially for design

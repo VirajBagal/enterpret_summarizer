@@ -1,0 +1,76 @@
+{
+    "os": "Linux-5.15.0-75-generic-x86_64-with-glibc2.31",
+    "python": "3.10.4",
+    "heartbeatAt": "2023-06-18T15:43:02.345517",
+    "startedAt": "2023-06-18T15:42:54.468228",
+    "docker": null,
+    "cuda": null,
+    "args": null,
+    "state": "running",
+    "program": "<python with no main file>",
+    "git": {
+        "remote": "https://github.com/VirajBagal/enterpret_summarizer.git",
+        "commit": "ca554ac4329c3cf8b9b5861edd9ca947a17183c4"
+    },
+    "email": "virajbagal12@gmail.com",
+    "root": "/home/admin/startup_assignments/enterpret",
+    "host": "viraj-HP-Laptop-15q-ds1xxx",
+    "username": "admin",
+    "executable": "/home/admin/anaconda3/envs/beast/bin/python",
+    "cpu_count": 4,
+    "cpu_count_logical": 8,
+    "cpu_freq": {
+        "current": 1994.1963750000002,
+        "min": 400.0,
+        "max": 3900.0
+    },
+    "cpu_freq_per_core": [
+        {
+            "current": 1041.781,
+            "min": 400.0,
+            "max": 3900.0
+        },
+        {
+            "current": 1014.806,
+            "min": 400.0,
+            "max": 3900.0
+        },
+        {
+            "current": 1800.0,
+            "min": 400.0,
+            "max": 3900.0
+        },
+        {
+            "current": 1800.0,
+            "min": 400.0,
+            "max": 3900.0
+        },
+        {
+            "current": 1800.0,
+            "min": 400.0,
+            "max": 3900.0
+        },
+        {
+            "current": 1800.0,
+            "min": 400.0,
+            "max": 3900.0
+        },
+        {
+            "current": 1800.0,
+            "min": 400.0,
+            "max": 3900.0
+        },
+        {
+            "current": 1800.0,
+            "min": 400.0,
+            "max": 3900.0
+        }
+    ],
+    "disk": {
+        "total": 233.17998886108398,
+        "used": 217.4363250732422
+    },
+    "memory": {
+        "total": 15.503009796142578
+    }
+}
