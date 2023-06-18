@@ -4,7 +4,7 @@
 # Created Date: Friday, 16th June 2023 8:12:09 am                              #
 # Author: Viraj Bagal (viraj.bagal@synapsica.com)                              #
 # -----                                                                        #
-# Last Modified: Saturday, 17th June 2023 7:51:40 pm                           #
+# Last Modified: Sunday, 18th June 2023 8:13:34 am                             #
 # Modified By: Viraj Bagal (viraj.bagal@synapsica.com)                         #
 # -----                                                                        #
 # Copyright (c) 2023 Synapsica                                                 #
@@ -121,6 +121,7 @@ def main(args):
         model.save_pretrained(config.OUTPUT_DIR)
     else:
         trainer.save_model(config.OUTPUT_DIR)
+    tokenizer.save_tokenizer(config.OUTPUT_DIR)
 
 
 if __name__ == "__main__":

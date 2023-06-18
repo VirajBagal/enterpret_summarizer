@@ -4,7 +4,7 @@
 # Created Date: Saturday, 17th June 2023 4:52:13 pm                            #
 # Author: Viraj Bagal (viraj.bagal@synapsica.com)                              #
 # -----                                                                        #
-# Last Modified: Saturday, 17th June 2023 5:19:23 pm                           #
+# Last Modified: Sunday, 18th June 2023 8:14:02 am                             #
 # Modified By: Viraj Bagal (viraj.bagal@synapsica.com)                         #
 # -----                                                                        #
 # Copyright (c) 2023 Synapsica                                                 #
@@ -53,7 +53,7 @@ def main(args):
     print(f"text: \n{sample[config.TEXT_COL_NAME]}\n---------------")
     print(f"summary: \n{sample[config.SUMMARY_COL_NAME]}\n---------------")
 
-    tokenizer, model = utils.load_model_tokenizer_for_inference(config.MODEL_DIR, device="auto")
+    model, tokenizer = utils.load_model_tokenizer_for_inference(args)
 
     max_source_length, max_target_length = utils.get_max_text_lengths(tokenizer, dataset, config)
     # set these values in config
@@ -142,6 +142,7 @@ if __name__ == "__main__":
     parser.add_argument("--model_dir", required=True, help="directory to saved model checkpoints")
     parser.add_argument("--batch_size", default=2, type=int, help="training and eval batch size")
     parser.add_argument("--log", action="store_true", help="log results to wandb")
+    parser.add_argument("--use_peft", action="store_true", help="use parameter efficient FT")
 
     args = parser.parse_args()
     main(args)

@@ -4,7 +4,7 @@
 # Created Date: Friday, 16th June 2023 8:50:10 am                              #
 # Author: Viraj Bagal (viraj.bagal@synapsica.com)                              #
 # -----                                                                        #
-# Last Modified: Saturday, 17th June 2023 4:56:42 pm                           #
+# Last Modified: Sunday, 18th June 2023 7:59:59 am                             #
 # Modified By: Viraj Bagal (viraj.bagal@synapsica.com)                         #
 # -----                                                                        #
 # Copyright (c) 2023 Synapsica                                                 #
@@ -102,18 +102,20 @@ def load_model_tokenizer(model_id, use_peft):
     return tokenizer, model
 
 
-def load_model_tokenizer_for_inference(model_dir, device):
-    config = PeftConfig.from_pretrained(model_dir)
+def load_model_tokenizer_for_inference(args):
+    # config = PeftConfig.from_pretrained(args.model_dir)
 
     # load base LLM model and tokenizer
-    model = AutoModelForSeq2SeqLM.from_pretrained(config.base_model_name_or_path, device_map=device)
-    tokenizer = AutoTokenizer.from_pretrained(config.base_model_name_or_path)
+    model = AutoModelForSeq2SeqLM.from_pretrained(args.model_dir, device_map="auto")
+    tokenizer = AutoTokenizer.from_pretrained(args.model_dir)
 
-    # Load the Lora model. Offload folder needed to keep offload some weights to disk if RAM is full.
-    model = PeftModel.from_pretrained(model, model_dir, device_map=device, offload_folder=model_dir)
+    if args.use_peft:
+        # Load the Lora model. Offload folder needed to keep offload some weights to disk if RAM is full.
+        model = PeftModel.from_pretrained(model, args.model_dir, device_map="auto", offload_folder=args.model_dir)
+        print("Peft model loaded")
+
     model.eval()
-
-    print("Peft model loaded")
+    print("Model set to eval")
     return model, tokenizer
 
 
