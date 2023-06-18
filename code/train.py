@@ -4,7 +4,7 @@
 # Created Date: Friday, 16th June 2023 8:12:09 am                              #
 # Author: Viraj Bagal (viraj.bagal@synapsica.com)                              #
 # -----                                                                        #
-# Last Modified: Sunday, 18th June 2023 8:13:34 am                             #
+# Last Modified: Sunday, 18th June 2023 8:34:48 am                             #
 # Modified By: Viraj Bagal (viraj.bagal@synapsica.com)                         #
 # -----                                                                        #
 # Copyright (c) 2023 Synapsica                                                 #
@@ -31,7 +31,7 @@ def main(args):
         SUMMARY_COL_NAME = "Summary"
         EXPERIMENT_NAME = args.project_name
         RUN_NAME = args.run_name
-        OUTPUT_DIR = os.path.join(args.output_dir, EXPERIMENT_NAME)
+        OUTPUT_DIR = os.path.join(args.output_dir, RUN_NAME)
         BATCH_SIZE = args.batch_size
         # we want to ignore tokenizer pad token in the loss
         LABEL_PAD_TOKEN_ID = -100
@@ -47,7 +47,7 @@ def main(args):
     dataset = datasets.load_from_disk(config.DATASET_PATH)
 
     print(f"Train dataset size: {len(dataset['train'])}")
-    print(f"Val dataset size: {len(dataset['val'])}")
+    print(f"Test dataset size: {len(dataset['test'])}")
 
     sample = dataset["train"][randrange(len(dataset["train"]))]
     print(f"text: \n{sample[config.TEXT_COL_NAME]}\n---------------")
@@ -109,7 +109,7 @@ def main(args):
         args=training_args,
         data_collator=data_collator,
         train_dataset=tokenized_dataset["train"],
-        eval_dataset=tokenized_dataset["val"],
+        eval_dataset=tokenized_dataset["test"],
         compute_metrics=partial(utils.compute_metrics, tokenizer=tokenizer, metric=metric, config=config),
     )
 
@@ -119,14 +119,14 @@ def main(args):
 
     if args.use_peft:
         model.save_pretrained(config.OUTPUT_DIR)
-    else:
-        trainer.save_model(config.OUTPUT_DIR)
-    tokenizer.save_tokenizer(config.OUTPUT_DIR)
+
+    trainer.save_model(config.OUTPUT_DIR)
+    tokenizer.save_pretrained(config.OUTPUT_DIR)
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--dataset_path", required=True, help="path to data folder")
+    parser.add_argument("--dataset_path", help="path to data folder")
     parser.add_argument("--output_dir", default="../output", help="path to save checkpoints")
     parser.add_argument("--project_name", default="FeedbackSummarizer", help="name of the project")
     parser.add_argument("--run_name", required=True, help="name of the experiment")

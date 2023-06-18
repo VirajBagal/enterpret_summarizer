@@ -4,7 +4,7 @@
 # Created Date: Friday, 16th June 2023 8:50:10 am                              #
 # Author: Viraj Bagal (viraj.bagal@synapsica.com)                              #
 # -----                                                                        #
-# Last Modified: Sunday, 18th June 2023 7:59:59 am                             #
+# Last Modified: Sunday, 18th June 2023 8:35:30 am                             #
 # Modified By: Viraj Bagal (viraj.bagal@synapsica.com)                         #
 # -----                                                                        #
 # Copyright (c) 2023 Synapsica                                                 #
@@ -14,7 +14,7 @@ import numpy as np
 from nltk.tokenize import sent_tokenize
 import re
 from transformers import AutoModelForSeq2SeqLM, AutoTokenizer
-from peft import LoraConfig, get_peft_model, prepare_model_for_int8_training, TaskType, PeftModel, PeftConfig
+from peft import LoraConfig, get_peft_model, TaskType, PeftModel, PeftConfig
 import datasets
 
 nltk.download("punkt")
@@ -106,7 +106,7 @@ def load_model_tokenizer_for_inference(args):
     # config = PeftConfig.from_pretrained(args.model_dir)
 
     # load base LLM model and tokenizer
-    model = AutoModelForSeq2SeqLM.from_pretrained(args.model_dir, device_map="auto")
+    model = AutoModelForSeq2SeqLM.from_pretrained(args.model if args.use_peft else args.model_dir, device_map="auto")
     tokenizer = AutoTokenizer.from_pretrained(args.model_dir)
 
     if args.use_peft:

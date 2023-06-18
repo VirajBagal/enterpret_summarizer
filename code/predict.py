@@ -4,7 +4,7 @@
 # Created Date: Saturday, 17th June 2023 4:52:13 pm                            #
 # Author: Viraj Bagal (viraj.bagal@synapsica.com)                              #
 # -----                                                                        #
-# Last Modified: Sunday, 18th June 2023 8:14:02 am                             #
+# Last Modified: Sunday, 18th June 2023 8:34:25 am                             #
 # Modified By: Viraj Bagal (viraj.bagal@synapsica.com)                         #
 # -----                                                                        #
 # Copyright (c) 2023 Synapsica                                                 #
@@ -62,9 +62,7 @@ def main(args):
 
     column_names = dataset["test"].column_names
     print("Columns names: ", column_names)
-    tokenized_dataset = dataset.map(
-        utils.tokenize, batched=True, remove_columns=column_names, fn_kwargs={"tokenizer": tokenizer, "config": config}
-    )
+    tokenized_dataset = dataset.map(utils.tokenize, batched=True, fn_kwargs={"tokenizer": tokenizer, "config": config})
     print(f"Keys of tokenized dataset: {list(tokenized_dataset['test'].features)}")
 
     print("Input ID: ", tokenized_dataset["test"]["input_ids"][0])
@@ -84,7 +82,6 @@ def main(args):
         per_device_train_batch_size=config.BATCH_SIZE,
         per_device_eval_batch_size=config.BATCH_SIZE,
         predict_with_generate=True,
-        fp16=True,
         # logging & evaluation strategies
         logging_dir=f"{config.OUTPUT_DIR}/logs",
         logging_strategy="steps",
@@ -114,7 +111,8 @@ def main(args):
     )
 
     # Start training
-    prediction_results = trainer.predict(tokenized_dataset["test"])
+    dummy = tokenized_dataset["test"].train_test_split(test_size=0.1)["test"]
+    prediction_results = trainer.predict(dummy)
     if args.log:
         metrics = prediction_results.metrics
         trainer.log_metrics("predict", metrics)
@@ -123,14 +121,13 @@ def main(args):
     predictions = np.where(predictions != -100, predictions, tokenizer.pad_token_id)
     predictions = tokenizer.batch_decode(predictions, skip_special_tokens=True, clean_up_tokenization_spaces=True)
     predictions = [pred.strip() for pred in predictions]
-    assert len(predictions) == len(tokenized_dataset["test"])
-    tokenized_dataset["test"] = tokenized_dataset["test"].map(
-        lambda row, index: {"prediction": predictions[index]}, with_index=True
+    assert len(predictions) == len(dummy)
+    dummy = dummy.map(
+        lambda row, index: {"prediction": predictions[index]},
+        with_indices=True,
+        remove_columns=["input_ids", "attention_mask", "labels"],
     )
-    tokenized_dataset["test"].to_csv(config.RUN_NAME + ".csv")
-    # output_prediction_file = os.path.join(config.OUTPUT_DIR, "generated_predictions.txt")
-    # with open(output_prediction_file, "w") as writer:
-    #     writer.write("\n".join(predictions))
+    dummy.to_csv(config.RUN_NAME + ".csv")
 
 
 if __name__ == "__main__":
@@ -139,6 +136,11 @@ if __name__ == "__main__":
     parser.add_argument("--output_dir", default="../output", help="path to save checkpoints")
     parser.add_argument("--project_name", default="FeedbackSummarizer", help="name of the project")
     parser.add_argument("--run_name", required=True, help="name of the experiment")
+    parser.add_argument(
+        "--model",
+        default="google/flan-t5-small",
+        help="load this model for inference. Needed to specify model name when using peft",
+    )
     parser.add_argument("--model_dir", required=True, help="directory to saved model checkpoints")
     parser.add_argument("--batch_size", default=2, type=int, help="training and eval batch size")
     parser.add_argument("--log", action="store_true", help="log results to wandb")
