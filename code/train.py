@@ -4,7 +4,7 @@
 # Created Date: Friday, 16th June 2023 8:12:09 am                              #
 # Author: Viraj Bagal (viraj.bagal@synapsica.com)                              #
 # -----                                                                        #
-# Last Modified: Sunday, 18th June 2023 3:33:43 pm                             #
+# Last Modified: Sunday, 18th June 2023 6:33:16 pm                             #
 # Modified By: Viraj Bagal (viraj.bagal@synapsica.com)                         #
 # -----                                                                        #
 # Copyright (c) 2023 Synapsica                                                 #
@@ -74,7 +74,7 @@ def main(args):
         tokenizer, model=model, label_pad_token_id=config.LABEL_PAD_TOKEN_ID, pad_to_multiple_of=8
     )
 
-    generation_config = GenerationConfig.from_pretrained(args.model, do_sample=False)
+    generation_config = GenerationConfig.from_pretrained(args.model, do_sample=False, max_length=max_target_length)
     # Define training args
     training_args = Seq2SeqTrainingArguments(
         output_dir=config.OUTPUT_DIR,

@@ -4,7 +4,7 @@
 # Created Date: Friday, 16th June 2023 8:50:10 am                              #
 # Author: Viraj Bagal (viraj.bagal@synapsica.com)                              #
 # -----                                                                        #
-# Last Modified: Sunday, 18th June 2023 11:10:06 am                            #
+# Last Modified: Sunday, 18th June 2023 6:42:45 pm                             #
 # Modified By: Viraj Bagal (viraj.bagal@synapsica.com)                         #
 # -----                                                                        #
 # Copyright (c) 2023 Synapsica                                                 #
@@ -105,13 +105,13 @@ def load_model_tokenizer(model_id, use_peft):
 def load_model_tokenizer_for_inference(config):
     # load base LLM model and tokenizer
     model = AutoModelForSeq2SeqLM.from_pretrained(
-        config.model if config.use_peft else config.output_dir, device_map="auto"
+        config.MODEL if config.USE_PEFT else config.OUTPUT_DIR, device_map="auto"
     )
-    tokenizer = AutoTokenizer.from_pretrained(config.output_dir)
+    tokenizer = AutoTokenizer.from_pretrained(config.OUTPUT_DIR)
 
-    if config.use_peft:
+    if config.USE_PEFT:
         # Load the Lora model. Offload folder needed to keep offload some weights to disk if RAM is full.
-        model = PeftModel.from_pretrained(model, config.output_dir, device_map="auto", offload_folder=config.output_dir)
+        model = PeftModel.from_pretrained(model, config.OUTPUT_DIR, device_map="auto", offload_folder=config.OUTPUT_DIR)
         print("Peft model loaded")
 
     model.eval()
@@ -122,7 +122,7 @@ def load_model_tokenizer_for_inference(config):
 def get_max_text_lengths(tokenizer, dataset, config):
     # The maximum total input sequence length after tokenization.
     # Sequences longer than this will be truncated, sequences shorter will be padded.
-    tokenized_inputs = datasets.concatenate_datasets([dataset["train"], dataset["test"]]).map(
+    tokenized_inputs = datasets.concatenate_datasets([dataset["train"], dataset["val"], dataset["test"]]).map(
         lambda x: tokenizer(x[config.TEXT_COL_NAME], truncation=True),
         batched=True,
         remove_columns=[config.TEXT_COL_NAME, config.SUMMARY_COL_NAME],
@@ -132,7 +132,7 @@ def get_max_text_lengths(tokenizer, dataset, config):
 
     # The maximum total sequence length for target text after tokenization.
     # Sequences longer than this will be truncated, sequences shorter will be padded."
-    tokenized_targets = datasets.concatenate_datasets([dataset["train"], dataset["test"]]).map(
+    tokenized_targets = datasets.concatenate_datasets([dataset["train"], dataset["val"], dataset["test"]]).map(
         lambda x: tokenizer(x[config.SUMMARY_COL_NAME], truncation=True),
         batched=True,
         remove_columns=[config.TEXT_COL_NAME, config.SUMMARY_COL_NAME],

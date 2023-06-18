@@ -4,7 +4,7 @@
 # Created Date: Saturday, 17th June 2023 4:52:13 pm                            #
 # Author: Viraj Bagal (viraj.bagal@synapsica.com)                              #
 # -----                                                                        #
-# Last Modified: Sunday, 18th June 2023 3:32:37 pm                             #
+# Last Modified: Sunday, 18th June 2023 6:39:57 pm                             #
 # Modified By: Viraj Bagal (viraj.bagal@synapsica.com)                         #
 # -----                                                                        #
 # Copyright (c) 2023 Synapsica                                                 #
@@ -34,6 +34,7 @@ def main(args):
         # we want to ignore tokenizer pad token in the loss
         LABEL_PAD_TOKEN_ID = -100
         USE_PEFT = args.use_peft
+        MODEL = args.model
 
     if args.log:
         wandb.login()
@@ -72,7 +73,7 @@ def main(args):
         tokenizer, model=model, label_pad_token_id=config.LABEL_PAD_TOKEN_ID, pad_to_multiple_of=8
     )
 
-    generation_config = GenerationConfig.from_pretrained(args.model, do_sample=False)
+    generation_config = GenerationConfig.from_pretrained(args.model, do_sample=False, max_length=max_target_length)
     # Define training args
     training_args = Seq2SeqTrainingArguments(
         output_dir=config.OUTPUT_DIR,
@@ -109,8 +110,8 @@ def main(args):
     )
 
     # Start training
-    dummy = tokenized_dataset["test"].train_test_split(test_size=0.1)["test"]
-    prediction_results = trainer.predict(dummy)
+    test_dataset = tokenized_dataset["test"]
+    prediction_results = trainer.predict(test_dataset)
     if args.log:
         metrics = prediction_results.metrics
         trainer.log_metrics("predict", metrics)
@@ -119,13 +120,13 @@ def main(args):
     predictions = np.where(predictions != -100, predictions, tokenizer.pad_token_id)
     predictions = tokenizer.batch_decode(predictions, skip_special_tokens=True, clean_up_tokenization_spaces=True)
     predictions = [pred.strip() for pred in predictions]
-    assert len(predictions) == len(dummy)
-    dummy = dummy.map(
+    assert len(predictions) == len(test_dataset)
+    test_dataset = test_dataset.map(
         lambda row, index: {"prediction": predictions[index]},
         with_indices=True,
         remove_columns=["input_ids", "attention_mask", "labels"],
     )
-    dummy.to_csv(config.RUN_NAME + ".csv")
+    test_dataset.to_csv(os.path.join(config.OUTPUT_DIR, "prediction.csv"))
 
 
 if __name__ == "__main__":
