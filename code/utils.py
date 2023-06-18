@@ -4,7 +4,7 @@
 # Created Date: Friday, 16th June 2023 8:50:10 am                              #
 # Author: Viraj Bagal (viraj.bagal@synapsica.com)                              #
 # -----                                                                        #
-# Last Modified: Sunday, 18th June 2023 6:42:45 pm                             #
+# Last Modified: Monday, 19th June 2023 1:41:16 am                             #
 # Modified By: Viraj Bagal (viraj.bagal@synapsica.com)                         #
 # -----                                                                        #
 # Copyright (c) 2023 Synapsica                                                 #
@@ -81,9 +81,6 @@ def load_model_tokenizer(model_id, use_peft):
             task_type=TaskType.SEQ_2_SEQ_LM,
             inference_mode=False,
         )
-        # prepare int-8 model for training
-        # print("Preparing model for int8 training")
-        # model = prepare_model_for_int8_training(model)
 
         # without below code, none of the tensors have grad_fn
         if hasattr(model, "enable_input_require_grads"):

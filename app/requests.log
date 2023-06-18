@@ -1,0 +1,6 @@
+DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): huggingface.co:443
+DEBUG:urllib3.connectionpool:https://huggingface.co:443 "HEAD /google/flan-t5-large/resolve/main/config.json HTTP/1.1" 200 0
+DEBUG:urllib3.connectionpool:https://huggingface.co:443 "HEAD /google/flan-t5-large/resolve/main/generation_config.json HTTP/1.1" 200 0
+DEBUG:urllib3.connectionpool:https://huggingface.co:443 "HEAD /google/flan-t5-large/resolve/main/tokenizer_config.json HTTP/1.1" 200 0
+INFO:root:Text: I was loving using notion for the last 4 months But randomly got logged out and when k tried to log back in its acting as if Im a new user and everything Ive created has disappeared including important information I need to work I contacted support twice in the last week and no one has gotten back to me This isnt professionally handled
+INFO:root:Summary: User has been loving using Notion for the last 4 months but has been logged out and lost all their created information, including important information needed for work. They have contacted support twice in the last week and have not received a response.
