@@ -4,7 +4,7 @@
 # Created Date: Friday, 16th June 2023 8:12:09 am                              #
 # Author: Viraj Bagal (viraj.bagal@synapsica.com)                              #
 # -----                                                                        #
-# Last Modified: Sunday, 18th June 2023 11:22:13 am                            #
+# Last Modified: Sunday, 18th June 2023 3:33:43 pm                             #
 # Modified By: Viraj Bagal (viraj.bagal@synapsica.com)                         #
 # -----                                                                        #
 # Copyright (c) 2023 Synapsica                                                 #
@@ -12,11 +12,7 @@
 import datasets
 from random import randrange
 import os
-from transformers import (
-    DataCollatorForSeq2Seq,
-    Seq2SeqTrainingArguments,
-    Seq2SeqTrainer,
-)
+from transformers import DataCollatorForSeq2Seq, Seq2SeqTrainingArguments, Seq2SeqTrainer, GenerationConfig
 import evaluate
 import utils
 from functools import partial
@@ -78,6 +74,7 @@ def main(args):
         tokenizer, model=model, label_pad_token_id=config.LABEL_PAD_TOKEN_ID, pad_to_multiple_of=8
     )
 
+    generation_config = GenerationConfig.from_pretrained(args.model, do_sample=False)
     # Define training args
     training_args = Seq2SeqTrainingArguments(
         output_dir=config.OUTPUT_DIR,
@@ -101,6 +98,7 @@ def main(args):
         save_total_limit=2,
         load_best_model_at_end=True,
         push_to_hub=False,
+        generation_config=generation_config,
     )
 
     # Create Trainer instance

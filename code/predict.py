@@ -4,7 +4,7 @@
 # Created Date: Saturday, 17th June 2023 4:52:13 pm                            #
 # Author: Viraj Bagal (viraj.bagal@synapsica.com)                              #
 # -----                                                                        #
-# Last Modified: Sunday, 18th June 2023 11:10:23 am                            #
+# Last Modified: Sunday, 18th June 2023 3:32:37 pm                             #
 # Modified By: Viraj Bagal (viraj.bagal@synapsica.com)                         #
 # -----                                                                        #
 # Copyright (c) 2023 Synapsica                                                 #
@@ -13,11 +13,7 @@
 import datasets
 from random import randrange
 import os
-from transformers import (
-    DataCollatorForSeq2Seq,
-    Seq2SeqTrainingArguments,
-    Seq2SeqTrainer,
-)
+from transformers import DataCollatorForSeq2Seq, Seq2SeqTrainingArguments, Seq2SeqTrainer, GenerationConfig
 import evaluate
 import utils
 from functools import partial
@@ -37,7 +33,6 @@ def main(args):
         BATCH_SIZE = args.batch_size
         # we want to ignore tokenizer pad token in the loss
         LABEL_PAD_TOKEN_ID = -100
-        MODEL_DIR = args.model_dir
         USE_PEFT = args.use_peft
 
     if args.log:
@@ -77,6 +72,7 @@ def main(args):
         tokenizer, model=model, label_pad_token_id=config.LABEL_PAD_TOKEN_ID, pad_to_multiple_of=8
     )
 
+    generation_config = GenerationConfig.from_pretrained(args.model, do_sample=False)
     # Define training args
     training_args = Seq2SeqTrainingArguments(
         output_dir=config.OUTPUT_DIR,
@@ -99,6 +95,7 @@ def main(args):
         load_best_model_at_end=True,
         push_to_hub=False,
         run_name=config.RUN_NAME,
+        generation_config=generation_config,
     )
 
     # Create Trainer instance
