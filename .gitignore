@@ -2,4 +2,3 @@
 app/models--google--flan-t5-large
 **/__pycache__
 **/cache-*.arrow
-**/data*

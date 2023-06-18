@@ -4,7 +4,7 @@
 # Created Date: Friday, 16th June 2023 8:12:09 am                              #
 # Author: Viraj Bagal (viraj.bagal@synapsica.com)                              #
 # -----                                                                        #
-# Last Modified: Sunday, 18th June 2023 11:05:55 am                            #
+# Last Modified: Sunday, 18th June 2023 11:22:13 am                            #
 # Modified By: Viraj Bagal (viraj.bagal@synapsica.com)                         #
 # -----                                                                        #
 # Copyright (c) 2023 Synapsica                                                 #
@@ -47,7 +47,7 @@ def main(args):
     dataset = datasets.load_from_disk(config.DATASET_PATH)
 
     print(f"Train dataset size: {len(dataset['train'])}")
-    print(f"Test dataset size: {len(dataset['test'])}")
+    print(f"Val dataset size: {len(dataset['val'])}")
 
     sample = dataset["train"][randrange(len(dataset["train"]))]
     print(f"text: \n{sample[config.TEXT_COL_NAME]}\n---------------")
@@ -109,7 +109,7 @@ def main(args):
         args=training_args,
         data_collator=data_collator,
         train_dataset=tokenized_dataset["train"],
-        eval_dataset=tokenized_dataset["test"],
+        eval_dataset=tokenized_dataset["val"],
         compute_metrics=partial(utils.compute_metrics, tokenizer=tokenizer, metric=metric, config=config),
     )
 
