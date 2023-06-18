@@ -38,3 +38,7 @@ config: {}
 2023-06-18 21:13:09,382 INFO    MainThread:7456 [wandb_run.py:_redirect():2075] Wrapping output streams.
 2023-06-18 21:13:09,382 INFO    MainThread:7456 [wandb_run.py:_redirect():2100] Redirects installed.
 2023-06-18 21:13:09,384 INFO    MainThread:7456 [wandb_init.py:init():828] run started, returning control to user process
+2023-06-18 23:52:26,475 INFO    MainThread:7456 [wandb_run.py:_finish():1890] finishing run vbagal/FeedbackSummarizer/ybdaawj5
+2023-06-18 23:52:26,476 INFO    MainThread:7456 [wandb_run.py:_atexit_cleanup():2124] got exitcode: 0
+2023-06-18 23:52:26,477 INFO    MainThread:7456 [wandb_run.py:_restore():2107] restore
+2023-06-18 23:52:26,478 INFO    MainThread:7456 [wandb_run.py:_restore():2113] restore done

@@ -4,7 +4,7 @@
 # Created Date: Friday, 16th June 2023 7:06:42 pm                              #
 # Author: Viraj Bagal (viraj.bagal@synapsica.com)                              #
 # -----                                                                        #
-# Last Modified: Saturday, 17th June 2023 10:29:47 am                          #
+# Last Modified: Monday, 19th June 2023 12:18:11 am                            #
 # Modified By: Viraj Bagal (viraj.bagal@synapsica.com)                         #
 # -----                                                                        #
 # Copyright (c) 2023 Synapsica                                                 #
@@ -32,7 +32,7 @@ model, tokenizer = inference_utils.load_model_tokenizer(peft_model_dir, device)
 
 @app.post("/summarize")
 def summarize_text(request: TextRequest):
-    processed_text = inference_utils.preprocess_text(text)
+    processed_text = inference_utils.preprocess_text(request.text)
     # we had trained in this way for Flan-T5
     processed_text = "summarize: " + processed_text
     input_ids = tokenizer(processed_text, return_tensors="pt", truncation=True).input_ids
