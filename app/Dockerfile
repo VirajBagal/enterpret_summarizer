@@ -20,10 +20,7 @@ COPY models--google--flan-t5-large .cache/huggingface/hub/models--google--flan-t
 
 WORKDIR /app
 
-RUN pip install uvicorn
-
 COPY lora_weights lora_weights
-
 COPY inference_utils.py inference_utils.py
 COPY app.py app.py
 

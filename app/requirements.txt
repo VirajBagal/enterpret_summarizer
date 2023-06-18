@@ -3,3 +3,4 @@ numpy==1.23.5
 peft==0.3.0
 pydantic==1.10.2
 transformers==4.28.1
+uvicorn==0.20.0
