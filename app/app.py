@@ -4,7 +4,7 @@
 # Created Date: Friday, 16th June 2023 7:06:42 pm                              #
 # Author: Viraj Bagal (viraj.bagal@synapsica.com)                              #
 # -----                                                                        #
-# Last Modified: Monday, 19th June 2023 1:54:36 am                             #
+# Last Modified: Monday, 19th June 2023 9:33:35 am                             #
 # Modified By: Viraj Bagal (viraj.bagal@synapsica.com)                         #
 # -----                                                                        #
 # Copyright (c) 2023 Synapsica                                                 #
@@ -21,8 +21,10 @@ logger = logging.getLogger("root")
 app = FastAPI()
 
 
-class TextRequest(BaseModel):
+class SummaryRequest(BaseModel):
     text: str
+    product_name: str
+    record_type: str
 
 
 text = "I am not able to install zoom"
@@ -35,7 +37,9 @@ model, tokenizer = inference_utils.load_model_tokenizer(peft_model_dir, device)
 
 
 @app.post("/summarize")
-def summarize_text(request: TextRequest):
+def summarize_text(request: SummaryRequest):
+    logger.info(f"Product Name: {request.product_name}")
+    logger.info(f"Record Type: {request.record_type}")
     logger.info(f"Text: {request.text}")
     processed_text = inference_utils.preprocess_text(request.text)
     # we had trained in this way for Flan-T5
