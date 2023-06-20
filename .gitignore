@@ -6,3 +6,6 @@ app/models--google--flan-t5-large
 # this is when whole model is saved as in case of flan-t5-small
 **/pytorch_model.bin
 **/wandb
+**/*.zip
+enterpret_final
+**/*#

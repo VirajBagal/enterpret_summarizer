@@ -4,7 +4,7 @@
 # Created Date: Friday, 16th June 2023 7:06:42 pm                              #
 # Author: Viraj Bagal (viraj.bagal@synapsica.com)                              #
 # -----                                                                        #
-# Last Modified: Monday, 19th June 2023 9:33:35 am                             #
+# Last Modified: Tuesday, 20th June 2023 10:21:21 am                           #
 # Modified By: Viraj Bagal (viraj.bagal@synapsica.com)                         #
 # -----                                                                        #
 # Copyright (c) 2023 Synapsica                                                 #
@@ -47,5 +47,6 @@ def summarize_text(request: SummaryRequest):
     input_ids = tokenizer(processed_text, return_tensors="pt", truncation=True).input_ids
     outputs = model.generate(input_ids=input_ids, max_new_tokens=max_target_length, do_sample=False)
     summary = tokenizer.batch_decode(outputs.detach().cpu().numpy(), skip_special_tokens=True)[0]
+    summary = None if summary.strip() == "Nothing" else summary
     logger.info(f"Summary: {summary}")
     return {"summary": summary}
