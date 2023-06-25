@@ -4,7 +4,7 @@
 # Created Date: Friday, 16th June 2023 6:49:50 pm                              #
 # Author: Viraj Bagal (viraj.bagal@synapsica.com)                              #
 # -----                                                                        #
-# Last Modified: Friday, 16th June 2023 7:35:32 pm                             #
+# Last Modified: Sunday, 25th June 2023 3:49:22 pm                             #
 # Modified By: Viraj Bagal (viraj.bagal@synapsica.com)                         #
 # -----                                                                        #
 # Copyright (c) 2023 Synapsica                                                 #
@@ -13,6 +13,7 @@
 import re
 from peft import PeftModel, PeftConfig
 from transformers import AutoModelForSeq2SeqLM, AutoTokenizer
+import wandb
 
 
 def load_model_tokenizer(model_dir, device):
@@ -53,3 +54,10 @@ def preprocess_text(text):
     text = text.replace("STRICT_LINK", "")
 
     return text
+
+
+def download_checkpoint():
+    run = wandb.init()
+    artifact = run.use_artifact("vbagal/model-registry/review_summarizer:production", type="model")
+    artifact_dir = artifact.download()
+    return artifact_dir

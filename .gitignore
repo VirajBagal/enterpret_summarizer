@@ -8,4 +8,8 @@ app/models--google--flan-t5-large
 **/wandb
 **/*.zip
 enterpret_final
+lora_weights
+**/artifacts
+app/modal.Dockerfile
+app/modal_app.py
 **/*#

@@ -13,16 +13,12 @@ COPY requirements.txt requirements.txt
 # Install Python dependencies, if any
 RUN pip install -r requirements.txt
 
-# create cache directory
-WORKDIR /root
-RUN mkdir -p .cache/huggingface/hub
-COPY models--google--flan-t5-large .cache/huggingface/hub/models--google--flan-t5-large
+# download weights in cache
+COPY download_snapshot.py download_snapshot.py
+RUN python3 download_snapshot.py
 
-WORKDIR /app
-
-COPY lora_weights lora_weights
 COPY inference_utils.py inference_utils.py
-COPY app.py app.py
+COPY app_v2.py app_v2.py
 
-CMD ["uvicorn", "app:app", "--host", "0.0.0.0"]
+CMD ["uvicorn", "app_v2:app", "--host", "0.0.0.0"]
 
