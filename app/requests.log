@@ -146,3 +146,27 @@ INFO:root:Record Type: string
 INFO:root:Text: User: The app itself is so amazing that I'm always thankful to use it very well. However, for users who work on documents and general tasks, poor Bluetooth keyboard connectivity is too fatal. Even if I try to type text from the iPad to the Bluetooth keyboard, the cursor disappears and I can't write at all. So in the end, I have to use a separate laptop, which is such a fatal flaw that makes my personal reason for buying an iPad and starting to use Notion come to nothing. Please improve the Bluetooth keyboard connectivity. By the way, I mainly use Cyclone's K3 model. If only keyboard connectivity were improved, it could be recognized as the best app that could not be expressed even with five stars. The fact that I can't use an external keyboard is so decisive for me.
 INFO:root:Summary: User is thankful for the app but finds the Bluetooth keyboard connectivity to be fatal for users who work on documents and general tasks. They have to use a separate laptop for this reason, making their personal reason for buying an iPad and starting to use Notion come to nothing.
 DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): o151352.ingest.sentry.io:443
+DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): api.wandb.ai:443
+DEBUG:urllib3.connectionpool:https://api.wandb.ai:443 "POST /graphql HTTP/1.1" 200 None
+DEBUG:urllib3.connectionpool:https://api.wandb.ai:443 "POST /graphql HTTP/1.1" 200 None
+DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): api.wandb.ai:443
+DEBUG:urllib3.connectionpool:https://api.wandb.ai:443 "POST /graphql HTTP/1.1" 200 None
+DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): api.wandb.ai:443
+DEBUG:urllib3.connectionpool:https://api.wandb.ai:443 "POST /graphql HTTP/1.1" 200 None
+DEBUG:urllib3.connectionpool:https://api.wandb.ai:443 "POST /graphql HTTP/1.1" 200 None
+DEBUG:urllib3.connectionpool:https://api.wandb.ai:443 "POST /graphql HTTP/1.1" 200 None
+DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): storage.googleapis.com:443
+DEBUG:urllib3.connectionpool:https://storage.googleapis.com:443 "GET /wandb-production.appspot.com/vbagal/FeedbackSummarizer/cbte70qr/artifact/498295466/wandb_manifest.json?Expires=1687715775&GoogleAccessId=wandb-production%40appspot.gserviceaccount.com&Signature=QsSUVyst5hW6igqkCX0nRHD8t7HrGA9F658%2FzIdaYErO4EKqwbM77rFNG1NapkDqEZFnd4LOYTOFq9m9R1ufq00HI%2FHojzuEDxMgTT34ssf4ZfGCaWdxQVSnif8FlASl70WabwIyMGWfqNPTB479Qm1t%2BUZSSD441PwJWgjbJBWPotWTVnh5vvnlTQhhwbcFVsuyDJvWXFX3Wgw8zkRFgLN2NbuyKfykmRF2w%2BbHB%2F%2FvzKqsgZiZWlzMyscytMggv9j7o2gGLAV797XDAgHn8l29neHtfUwX4CtZDCIpXIYVlmcP7Y%2FeRys12Qo5ue9OSgrTx7XNwLVY%2FY49xGd0RQ%3D%3D HTTP/1.1" 200 514
+DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): huggingface.co:443
+DEBUG:urllib3.connectionpool:https://huggingface.co:443 "HEAD /google/flan-t5-large/resolve/main/config.json HTTP/1.1" 200 0
+DEBUG:urllib3.connectionpool:https://huggingface.co:443 "HEAD /google/flan-t5-large/resolve/main/generation_config.json HTTP/1.1" 200 0
+DEBUG:urllib3.connectionpool:https://huggingface.co:443 "HEAD /google/flan-t5-large/resolve/main/tokenizer_config.json HTTP/1.1" 200 0
+DEBUG:urllib3.connectionpool:https://huggingface.co:443 "HEAD /google/flan-t5-large/resolve/main/spiece.model HTTP/1.1" 302 0
+DEBUG:filelock:Attempting to acquire lock 139674392125392 on /root/.cache/huggingface/hub/models--google--flan-t5-large/blobs/d60acb128cf7b7f2536e8f38a5b18a05535c9e14c7a355904270e15b0945ea86.lock
+DEBUG:filelock:Lock 139674392125392 acquired on /root/.cache/huggingface/hub/models--google--flan-t5-large/blobs/d60acb128cf7b7f2536e8f38a5b18a05535c9e14c7a355904270e15b0945ea86.lock
+DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): cdn-lfs.huggingface.co:443
+DEBUG:urllib3.connectionpool:https://cdn-lfs.huggingface.co:443 "GET /repos/d7/b0/d7b0b5a69ec370dc086b3a7e292286fc72f607ac78f54e474a5ece7f42423dbf/d60acb128cf7b7f2536e8f38a5b18a05535c9e14c7a355904270e15b0945ea86?response-content-disposition=attachment%3B+filename*%3DUTF-8%27%27spiece.model%3B+filename%3D%22spiece.model%22%3B&Expires=1687963270&Policy=eyJTdGF0ZW1lbnQiOlt7IlJlc291cmNlIjoiaHR0cHM6Ly9jZG4tbGZzLmh1Z2dpbmdmYWNlLmNvL3JlcG9zL2Q3L2IwL2Q3YjBiNWE2OWVjMzcwZGMwODZiM2E3ZTI5MjI4NmZjNzJmNjA3YWM3OGY1NGU0NzRhNWVjZTdmNDI0MjNkYmYvZDYwYWNiMTI4Y2Y3YjdmMjUzNmU4ZjM4YTViMThhMDU1MzVjOWUxNGM3YTM1NTkwNDI3MGUxNWIwOTQ1ZWE4Nj9yZXNwb25zZS1jb250ZW50LWRpc3Bvc2l0aW9uPSoiLCJDb25kaXRpb24iOnsiRGF0ZUxlc3NUaGFuIjp7IkFXUzpFcG9jaFRpbWUiOjE2ODc5NjMyNzB9fX1dfQ__&Signature=U7w1YWlj9lx9oRNsbNfr-HxN0EByxZ05wPpEelTFDWz~CfZVx5bW9sku5MGBwK-rja~wZU1jzQ2pm758SGys207DJSq~W3q6xIxZ6il-caPqSX-3SA~IxWvuPtdqWNFL9Yhdg6inEDm4dihhOr8KmmAjIw9-MhDF7u0XN~VbrxN-dmSMxwqrK20wW8YnmFQlpbkqoxhOb~y54g1fRPqo0RbKjNZe1kSHGt0-C5EjOo6UA4gH4r3qRtvxKfcb7oxheVOOt525riXOB6SsJg5rnuHz0B5qLPJrq8r5uWrK5CxPb2hSMb3klxcfmWBLY8v~Po3KYzxQoUiFCnvfAtNOHA__&Key-Pair-Id=KVTP0A1DKRTAX HTTP/1.1" 200 791656
+DEBUG:filelock:Attempting to release lock 139674392125392 on /root/.cache/huggingface/hub/models--google--flan-t5-large/blobs/d60acb128cf7b7f2536e8f38a5b18a05535c9e14c7a355904270e15b0945ea86.lock
+DEBUG:filelock:Lock 139674392125392 released on /root/.cache/huggingface/hub/models--google--flan-t5-large/blobs/d60acb128cf7b7f2536e8f38a5b18a05535c9e14c7a355904270e15b0945ea86.lock
+DEBUG:urllib3.connectionpool:https://huggingface.co:443 "HEAD /google/flan-t5-large/resolve/main/added_tokens.json HTTP/1.1" 404 0
+DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): o151352.ingest.sentry.io:443

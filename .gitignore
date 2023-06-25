@@ -12,4 +12,6 @@ lora_weights
 **/artifacts
 app/modal.Dockerfile
 app/modal_app.py
+**/aws
+**/.env
 **/*#
